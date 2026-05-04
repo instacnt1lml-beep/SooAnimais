@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Animal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-15px) scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-emerald-950 to-emerald-900 min-h-screen text-white">
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+
+        <div class="flex justify-between items-center mb-10">
+            <div class="flex items-center gap-3">
+                <span class="text-5xl">🦁</span>
+                <h1 class="text-4xl font-bold">Quiz Animal</h1>
+            </div>
+            <div id="scoreHeader" class="hidden items-center gap-2 bg-emerald-900 px-6 py-3 rounded-2xl">
+                <span class="text-emerald-400">Pontos:</span>
+                <span id="currentScore" class="text-3xl font-bold text-emerald-300">0</span>
+            </div>
+        </div>
+
+        <!-- Tela Inicial -->
+        <div id="homeScreen">
+            <div class="text-center mb-12">
+                <h2 class="text-5xl font-bold mb-4">Quanto você sabe sobre animais?</h2>
+                <p class="text-xl text-emerald-300">Escolha a dificuldade</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div onclick="startQuiz(0)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-emerald-500 hover:border-emerald-400">
+                    <div class="text-6xl mb-4">🐶</div>
+                    <h3 class="text-3xl font-bold">Fácil</h3>
+                    <p class="text-emerald-300 mt-1">Iniciante</p>
+                </div>
+
+                <div onclick="startQuiz(1)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-yellow-500 hover:border-yellow-400">
+                    <div class="text-6xl mb-4">🦒</div>
+                    <h3 class="text-3xl font-bold">Médio</h3>
+                    <p class="text-emerald-300 mt-1">Intermediário</p>
+                </div>
+
+                <div onclick="startQuiz(2)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-red-500 hover:border-red-400">
+                    <div class="text-6xl mb-4">🦅</div>
+                    <h3 class="text-3xl font-bold">Difícil</h3>
+                    <p class="text-emerald-300 mt-1">Expert</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz -->
+        <div id="quizScreen" class="hidden">
+            <div class="bg-emerald-900 rounded-3xl p-8 md:p-12">
+                <div class="flex justify-between mb-6">
+                    <span>Pergunta <span id="currentQuestionNum">1</span>/15</span>
+                    <span id="timer" class="font-bold">30s</span>
+                </div>
+                
+                <div class="h-3 bg-emerald-950 rounded-full mb-10">
+                    <div id="progress" class="h-3 bg-emerald-400 rounded-full w-0"></div>
+                </div>
+
+                <h2 id="questionText" class="text-2xl md:text-3xl font-semibold mb-10 min-h-[110px]"></h2>
+
+                <div id="optionsContainer" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- Resultado -->
+        <div id="resultScreen" class="hidden text-center">
+            <div class="bg-emerald-900 rounded-3xl p-12">
+                <div id="resultEmoji" class="text-8xl mb-6"></div>
+                <h2 class="text-4xl font-bold mb-4">Seu Resultado</h2>
+                <p id="finalScore" class="text-6xl font-bold text-emerald-400 mb-6"></p>
+                <p id="accuracy" class="text-2xl mb-10"></p>
+
+                <button onclick="restartQuiz()" 
+                        class="bg-emerald-500 hover:bg-emerald-600 text-black font-bold px-12 py-5 rounded-3xl text-xl">
+                    Jogar Novamente
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center text-emerald-500 text-sm mt-12">
+            Feito por <span class="font-bold text-emerald-400">BYSOARES</span>
+        </div>
+    </div>
+
+    <script>
+        const questions = {
+            easy: [
+                { q: "Qual animal é conhecido como o rei da selva?", a: ["Leão", "Tigre", "Elefante", "Urso"], c: 0 },
+                { q: "Quantas patas tem uma aranha?", a: ["6", "8", "10", "4"], c: 1 },
+                { q: "O que o panda come?", a: ["Carne", "Bambu", "Peixe", "Frutas"], c: 1 },
+                { q: "Qual é o animal mais alto do mundo?", a: ["Elefante", "Girafa", "Cavalo", "Camelo"], c: 1 },
+                { q: "Qual animal tem listras pretas e brancas?", a: ["Tigre", "Leopardo", "Zebra", "Girafa"], c: 2 }
+            ],
+            medium: [
+                { q: "Qual é o animal mais rápido do mundo?", a: ["Guepardo", "Falcão", "Águia", "Leopardo"], c: 0 },
+                { q: "Quantos corações tem um polvo?", a: ["1", "2", "3", "4"], c: 2 },
+                { q: "Qual animal pode mudar de cor?", a: ["Camaleão", "Tartaruga", "Sapo", "Lagarto"], c: 0 },
+                { q: "Qual é o maior animal do planeta?", a: ["Elefante", "Baleia Azul", "Tubarão", "Girafa"], c: 1 }
+            ],
+            hard: [
+                { q: "Qual animal tem sangue azul?", a: ["Polvo", "Tubarão", "Cobra", "Jacaré"], c: 0 },
+                { q: "Qual é o único mamífero que voa?", a: ["Morcego", "Esquilo", "Pássaro", "Morcego-vampiro"], c: 0 },
+                { q: "Quantos ossos tem o pescoço da girafa?", a: ["7", "14", "21", "30"], c: 0 },
+                { q: "Qual animal dorme em pé?", a: ["Cavalo", "Elefante", "Flamingo", "Todos"], c: 3 }
+            ]
+        };
+
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timer;
+
+        function startQuiz(level) {
+            document.getElementById('homeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            document.getElementById('scoreHeader').classList.remove('hidden');
+
+            currentQuestions = questions[level === 0 ? 'easy' : level === 1 ? 'medium' : 'hard'];
+            currentQuestions = [...currentQuestions].sort(() => Math.random() - 0.5);
+            
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('currentScore').textContent = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentIndex >= currentQuestions.length) {
+                showResult();
+                return;
+            }
+
+            const q = currentQuestions[currentIndex];
+            document.getElementById('currentQuestionNum').textContent = currentIndex + 1;
+            document.getElementById('questionText').textContent = q.q;
+            document.getElementById('progress').style.width = ((currentIndex / currentQuestions.length) * 100) + '%';
+
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+
+            q.a.forEach((answer, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-6 text-left rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-xl transition-all";
+                btn.textContent = answer;
+                btn.onclick = () => answerQuestion(i);
+                container.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            let time = 30;
+            document.getElementById('timer').textContent = time + "s";
+            
+            if (timer) clearInterval(timer);
+            
+            timer = setInterval(() => {
+                time--;
+                document.getElementById('timer').textContent = time + "s";
+                if (time <= 0) {
+                    clearInterval(timer);
+                    nextQuestion();
+                }
+            }, 1000);
+        }
+
+        function answerQuestion(selected) {
+            clearInterval(timer);
+            const correct = currentQuestions[currentIndex].c;
+            const buttons = document.querySelectorAll('#optionsContainer button');
+            
+            buttons.forEach((btn, i) => {
+                if (i === correct) btn.style.backgroundColor = '#4ade80';
+                if (i === selected && i !== correct) btn.style.backgroundColor = '#f87171';
+                btn.onclick = null;
+            });
+
+            if (selected === correct) {
+                score += 10;
+                document.getElementById('currentScore').textContent = score;
+            }
+
+            setTimeout(() => {
+                currentIndex++;
+                loadQuestion();
+            }, 1400);
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            loadQuestion();
+        }
+
+        function showResult() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+
+            const percent = Math.round((score / (currentQuestions.length * 10)) * 100);
+            
+            document.getElementById('finalScore').textContent = score + " pts";
+            document.getElementById('accuracy').innerHTML = `Você acertou <span class="text-emerald-400 font-bold">${percent}%</span>`;
+
+            const emoji = document.getElementById('resultEmoji');
+            emoji.textContent = percent > 80 ? "🏆" : percent > 60 ? "🎉" : percent > 40 ? "👍" : "🐢";
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultScreen').classList.add('hidden');
+            document.getElementById('homeScreen').classList.remove('hidden');
+            document.getElementById('scoreHeader').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
