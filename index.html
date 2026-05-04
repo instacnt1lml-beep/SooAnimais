@@ -3,230 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Animal</title>
+    <title>🦁 Quiz Selvagem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto:wght@400;700&display=swap');
         
-        body {
-            font-family: 'Poppins', sans-serif;
+        :root {
+            --primary: #22c55e;
         }
         
-        .card-hover:hover {
-            transform: translateY(-15px) scale(1.05);
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Press Start 2P', system-ui;
+        }
+
+        .animal-bg {
+            background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+        }
+
+        .card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+
+        .option {
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+        
+        .option:hover {
+            transform: scale(1.05);
+            background-color: #166534;
+        }
+        
+        .option.selected {
+            animation: pulse 0.6s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .correct {
+            animation: correctAnim 1.2s ease;
+        }
+
+        @keyframes correctAnim {
+            0% { background-color: #166534; }
+            100% { background-color: #4ade80; color: #052e16; }
+        }
+
+        .progress-bar {
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .animal-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .modal {
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 12px;
+            right: 20px;
+            color: rgba(163, 230, 187, 0.15);
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 9999;
+            user-select: none;
+            transform: rotate(-8deg);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-emerald-950 to-emerald-900 min-h-screen text-white">
-
-    <div class="max-w-4xl mx-auto px-4 py-8">
-
-        <div class="flex justify-between items-center mb-10">
+<body class="animal-bg text-white min-h-screen">
+    <div class="max-w-2xl mx-auto min-h-screen flex flex-col">
+        
+        <!-- HEADER -->
+        <header class="p-6 flex items-center justify-between border-b border-green-700">
             <div class="flex items-center gap-3">
-                <span class="text-5xl">🦁</span>
-                <h1 class="text-4xl font-bold">Quiz Animal</h1>
-            </div>
-            <div id="scoreHeader" class="hidden items-center gap-2 bg-emerald-900 px-6 py-3 rounded-2xl">
-                <span class="text-emerald-400">Pontos:</span>
-                <span id="currentScore" class="text-3xl font-bold text-emerald-300">0</span>
-            </div>
-        </div>
-
-        <!-- Tela Inicial -->
-        <div id="homeScreen">
-            <div class="text-center mb-12">
-                <h2 class="text-5xl font-bold mb-4">Quanto você sabe sobre animais?</h2>
-                <p class="text-xl text-emerald-300">Escolha a dificuldade</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div onclick="startQuiz(0)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-emerald-500 hover:border-emerald-400">
-                    <div class="text-6xl mb-4">🐶</div>
-                    <h3 class="text-3xl font-bold">Fácil</h3>
-                    <p class="text-emerald-300 mt-1">Iniciante</p>
-                </div>
-
-                <div onclick="startQuiz(1)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-yellow-500 hover:border-yellow-400">
-                    <div class="text-6xl mb-4">🦒</div>
-                    <h3 class="text-3xl font-bold">Médio</h3>
-                    <p class="text-emerald-300 mt-1">Intermediário</p>
-                </div>
-
-                <div onclick="startQuiz(2)" class="card-hover bg-emerald-800 rounded-3xl p-8 cursor-pointer text-center border-2 border-red-500 hover:border-red-400">
-                    <div class="text-6xl mb-4">🦅</div>
-                    <h3 class="text-3xl font-bold">Difícil</h3>
-                    <p class="text-emerald-300 mt-1">Expert</p>
+                <div class="w-12 h-12 bg-green-500 rounded-2xl flex items-center justify-center text-3xl shadow-lg animal-icon">🦒</div>
+                <div>
+                    <h1 class="title-font text-3xl tracking-wider text-green-400">QUIZ</h1>
+                    <p class="text-xs text-green-300 -mt-1">SELVAGEM</p>
                 </div>
             </div>
-        </div>
+            <div id="score-header" class="hidden items-center gap-2 bg-black/40 px-4 py-2 rounded-2xl">
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <span id="current-score" class="font-mono text-xl font-bold">0</span>
+            </div>
+        </header>
 
-        <!-- Quiz -->
-        <div id="quizScreen" class="hidden">
-            <div class="bg-emerald-900 rounded-3xl p-8 md:p-12">
-                <div class="flex justify-between mb-6">
-                    <span>Pergunta <span id="currentQuestionNum">1</span>/15</span>
-                    <span id="timer" class="font-bold">30s</span>
+        <!-- SCREENS -->
+        <div id="start-screen" class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+            <div class="mb-12">
+                <div class="inline-flex items-center gap-4 text-8xl mb-6">
+                    <span class="animal-icon">🦁</span>
+                    <span class="animal-icon delay-150">🐘</span>
+                    <span class="animal-icon delay-300">🦋</span>
                 </div>
+                <h1 class="title-font text-6xl text-green-400 mb-2 tracking-widest">QUIZ SELVAGEM</h1>
+                <p class="text-green-300 text-lg">Teste seus conhecimentos sobre o reino animal!</p>
+            </div>
+
+            <div class="w-full max-w-md space-y-4">
+                <button onclick="startQuiz('easy')" 
+                        class="w-full bg-green-600 hover:bg-green-500 py-6 px-8 rounded-3xl text-2xl font-bold flex items-center justify-between group transition-all">
+                    <div class="flex items-center gap-4">
+                        <span class="text-4xl">🐥</span>
+                        <div class="text-left">
+                            <div>FÁCIL</div>
+                            <div class="text-sm text-green-200">Para iniciantes</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-3xl group-active:translate-x-2 transition"></i>
+                </button>
                 
-                <div class="h-3 bg-emerald-950 rounded-full mb-10">
-                    <div id="progress" class="h-3 bg-emerald-400 rounded-full w-0"></div>
-                </div>
-
-                <h2 id="questionText" class="text-2xl md:text-3xl font-semibold mb-10 min-h-[110px]"></h2>
-
-                <div id="optionsContainer" class="space-y-4"></div>
-            </div>
-        </div>
-
-        <!-- Resultado -->
-        <div id="resultScreen" class="hidden text-center">
-            <div class="bg-emerald-900 rounded-3xl p-12">
-                <div id="resultEmoji" class="text-8xl mb-6"></div>
-                <h2 class="text-4xl font-bold mb-4">Seu Resultado</h2>
-                <p id="finalScore" class="text-6xl font-bold text-emerald-400 mb-6"></p>
-                <p id="accuracy" class="text-2xl mb-10"></p>
-
-                <button onclick="restartQuiz()" 
-                        class="bg-emerald-500 hover:bg-emerald-600 text-black font-bold px-12 py-5 rounded-3xl text-xl">
-                    Jogar Novamente
+                <button onclick="startQuiz('medium')" 
+                        class="w-full bg-yellow-600 hover:bg-yellow-500 py-6 px-8 rounded-3xl text-2xl font-bold flex items-center justify-between group transition-all">
+                    <div class="flex items-center gap-4">
+                        <span class="text-4xl">🦊</span>
+                        <div class="text-left">
+                            <div>MÉDIO</div>
+                            <div class="text-sm text-yellow-200">Desafiador</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-3xl group-active:translate-x-2 transition"></i>
+                </button>
+                
+                <button onclick="startQuiz('hard')" 
+                        class="w-full bg-red-600 hover:bg-red-500 py-6 px-8 rounded-3xl text-2xl font-bold flex items-center justify-between group transition-all">
+                    <div class="flex items-center gap-4">
+                        <span class="text-4xl">🦈</span>
+                        <div class="text-left">
+                            <div>DIFÍCIL</div>
+                            <div class="text-sm text-red-200">Para especialistas</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-arrow-right text-3xl group-active:translate-x-2 transition"></i>
                 </button>
             </div>
         </div>
 
-        <div class="text-center text-emerald-500 text-sm mt-12">
-            Feito por <span class="font-bold text-emerald-400">BYSOARES</span>
+        <!-- QUIZ SCREEN -->
+        <div id="quiz-screen" class="hidden flex-1 flex flex-col">
+            <div class="p-6">
+                <div class="flex justify-between text-sm mb-2">
+                    <div><span id="question-number">1</span>/6</div>
+                    <div id="timer" class="font-mono">30s</div>
+                </div>
+                <div class="h-3 bg-green-950 rounded-3xl overflow-hidden">
+                    <div id="progress" class="progress-bar h-3 bg-gradient-to-r from-green-400 to-emerald-500 rounded-3xl w-1/6"></div>
+                </div>
+            </div>
+
+            <div class="flex-1 p-8 flex flex-col">
+                <div id="question-image" class="w-full h-56 bg-cover bg-center rounded-3xl mb-8 shadow-2xl border border-green-700"></div>
+                <h2 id="question-text" class="text-2xl font-bold leading-tight mb-10 min-h-[120px]"></h2>
+                <div id="options" class="grid grid-cols-1 gap-4 flex-1"></div>
+            </div>
+        </div>
+
+        <!-- FEEDBACK MODAL -->
+        <div id="feedback-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+            <div class="modal bg-gradient-to-br from-green-900 to-emerald-950 border border-green-400 rounded-3xl max-w-md w-full mx-4 overflow-hidden">
+                <div id="feedback-content" class="p-8 text-center"></div>
+                <div class="border-t border-green-700 p-4">
+                    <button onclick="nextQuestion()" 
+                            id="next-btn"
+                            class="w-full py-5 bg-green-500 hover:bg-green-400 rounded-2xl font-bold text-xl flex items-center justify-center gap-3">
+                        PRÓXIMA PERGUNTA
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="results-screen" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center">
+            <div id="result-animal" class="text-9xl mb-6"></div>
+            <h2 class="title-font text-5xl mb-2">FIM DE JOGO</h2>
+            <p id="result-title" class="text-3xl mb-8 text-green-400"></p>
+            
+            <div class="bg-black/50 rounded-3xl p-8 w-full max-w-xs mb-10">
+                <div class="text-6xl font-mono font-bold" id="final-score">0</div>
+                <div class="text-green-400 text-sm tracking-widest">PONTOS</div>
+                <div class="h-px bg-green-700 my-6"></div>
+                <div class="flex justify-between text-left">
+                    <div>Acertos</div>
+                    <div id="correct-count" class="font-mono font-bold">0/6</div>
+                </div>
+            </div>
+
+            <div class="flex gap-4 w-full max-w-xs">
+                <button onclick="restartQuiz()" 
+                        class="flex-1 py-6 bg-green-600 hover:bg-green-500 rounded-3xl font-bold">
+                    JOGAR NOVAMENTE
+                </button>
+                <button onclick="goHome()" 
+                        class="flex-1 py-6 bg-zinc-700 hover:bg-zinc-600 rounded-3xl font-bold">
+                    MENU
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- WATERMARK -->
+    <div class="watermark">feito por Soares</div>
+
+    <audio id="correct-sound" src="https://assets.mixkit.co/sfx/preview/2965/2965.wav"></audio>
+    <audio id="wrong-sound" src="https://assets.mixkit.co/sfx/preview/2957/2957.wav"></audio>
+    <audio id="bg-music" loop src="https://assets.mixkit.co/music/preview/2510/2510.wav"></audio>
 
     <script>
         const questions = {
             easy: [
-                { q: "Qual animal é conhecido como o rei da selva?", a: ["Leão", "Tigre", "Elefante", "Urso"], c: 0 },
-                { q: "Quantas patas tem uma aranha?", a: ["6", "8", "10", "4"], c: 1 },
-                { q: "O que o panda come?", a: ["Carne", "Bambu", "Peixe", "Frutas"], c: 1 },
-                { q: "Qual é o animal mais alto do mundo?", a: ["Elefante", "Girafa", "Cavalo", "Camelo"], c: 1 },
-                { q: "Qual animal tem listras pretas e brancas?", a: ["Tigre", "Leopardo", "Zebra", "Girafa"], c: 2 }
+                { question: "Qual animal é conhecido como o 'rei da selva'?", image: "https://picsum.photos/id/1015/800/600", options: ["Elefante", "Leão", "Tigre", "Girafa"], correct: 1, explanation: "O leão é chamado de rei da selva por sua força e majestade." },
+                { question: "Quantas patas tem uma aranha?", image: "https://picsum.photos/id/201/800/600", options: ["4", "6", "8", "10"], correct: 2, explanation: "As aranhas têm 8 patas." },
+                { question: "Qual é o maior animal do mundo?", image: "https://picsum.photos/id/251/800/600", options: ["Elefante africano", "Baleia azul", "Tubarão-baleia", "Girafa"], correct: 1, explanation: "A baleia azul é o maior animal que já existiu na Terra." },
+                { question: "O que os pandas comem principalmente?", image: "https://picsum.photos/id/301/800/600", options: ["Carne", "Frutas", "Bambu", "Insetos"], correct: 2, explanation: "Os pandas são herbívoros e se alimentam quase exclusivamente de bambu." },
+                { question: "Qual animal dorme em pé?", image: "https://picsum.photos/id/401/800/600", options: ["Cavalo", "Cachorro", "Gato", "Pinguim"], correct: 0, explanation: "Os cavalos conseguem dormir em pé graças ao mecanismo de bloqueio das patas." },
+                { question: "Qual é o animal mais rápido do mundo?", image: "https://picsum.photos/id/451/800/600", options: ["Guepardo", "Falcão-peregrino", "Lebre", "Tubarão"], correct: 1, explanation: "O falcão-peregrino atinge mais de 320 km/h em mergulho." }
             ],
             medium: [
-                { q: "Qual é o animal mais rápido do mundo?", a: ["Guepardo", "Falcão", "Águia", "Leopardo"], c: 0 },
-                { q: "Quantos corações tem um polvo?", a: ["1", "2", "3", "4"], c: 2 },
-                { q: "Qual animal pode mudar de cor?", a: ["Camaleão", "Tartaruga", "Sapo", "Lagarto"], c: 0 },
-                { q: "Qual é o maior animal do planeta?", a: ["Elefante", "Baleia Azul", "Tubarão", "Girafa"], c: 1 }
+                { question: "Qual é o único mamífero capaz de voar?", image: "https://picsum.photos/id/501/800/600", options: ["Morcego", "Esquilo voador", "Pássaro", "Libélula"], correct: 0, explanation: "O morcego é o único mamífero verdadeiro capaz de voo sustentado." },
+                { question: "Em qual continente vivem os cangurus?", image: "https://picsum.photos/id/551/800/600", options: ["África", "Ásia", "Austrália", "América do Sul"], correct: 2, explanation: "Os cangurus são nativos da Austrália." },
+                { question: "Qual animal tem a língua mais longa em proporção ao corpo?", image: "https://picsum.photos/id/601/800/600", options: ["Girafa", "Camaleão", "Tamanduá", "Formiga-leão"], correct: 2, explanation: "O tamanduá possui uma língua que pode chegar a 60cm." },
+                { question: "Quantos corações tem um polvo?", image: "https://picsum.photos/id/651/800/600", options: ["1", "2", "3", "4"], correct: 2, explanation: "O polvo tem três corações: dois para as brânquias e um para o corpo." },
+                { question: "Qual é o animal com o maior cérebro em relação ao tamanho do corpo?", image: "https://picsum.photos/id/701/800/600", options: ["Elefante", "Golfinho", "Humano", "Chimpanzé"], correct: 1, explanation: "Os golfinhos possuem uma alta razão entre cérebro e corpo." },
+                { question: "O que significa 'camuflagem' nos animais?", image: "https://picsum.photos/id/751/800/600", options: ["Velocidade extrema", "Capacidade de mudar de cor", "Habilidade de se esconder", "Veneno"], correct: 2, explanation: "Camuflagem é a habilidade de se misturar ao ambiente para evitar predadores." }
             ],
             hard: [
-                { q: "Qual animal tem sangue azul?", a: ["Polvo", "Tubarão", "Cobra", "Jacaré"], c: 0 },
-                { q: "Qual é o único mamífero que voa?", a: ["Morcego", "Esquilo", "Pássaro", "Morcego-vampiro"], c: 0 },
-                { q: "Quantos ossos tem o pescoço da girafa?", a: ["7", "14", "21", "30"], c: 0 },
-                { q: "Qual animal dorme em pé?", a: ["Cavalo", "Elefante", "Flamingo", "Todos"], c: 3 }
+                { question: "Qual é o nome científico do ornitorrinco?", image: "https://picsum.photos/id/801/800/600", options: ["Platypus anatinus", "Ornithorhynchus anatinus", "Monotremata paradoxus", "Venomous duckbill"], correct: 1, explanation: "Ornithorhynchus anatinus é o nome científico do ornitorrinco." },
+                { question: "Qual animal produz o som mais alto do reino animal?", image: "https://picsum.photos/id/851/800/600", options: ["Elefante", "Baleia azul", "Gafanhoto-tigre", "Macaco uivador"], correct: 2, explanation: "O gafanhoto-tigre pode produzir sons de até 120 decibéis." },
+                { question: "Qual é o único continente onde não existem cobras nativas?", image: "https://picsum.photos/id/901/800/600", options: ["Antártida", "Austrália", "África", "Europa"], correct: 0, explanation: "Não existem cobras nativas na Antártida devido ao clima extremo." },
+                { question: "Qual animal tem sangue azul?", image: "https://picsum.photos/id/951/800/600", options: ["Polvo", "Lagosta", "Caranguejo-ferradura", "Todas as acima"], correct: 3, explanation: "Polvos, lagostas e caranguejos-ferradura têm hemocianina (cobre) no sangue." },
+                { question: "Qual é o tempo de gestação da elefanta?", image: "https://picsum.photos/id/1005/800/600", options: ["9 meses", "14 meses", "22 meses", "30 meses"], correct: 2, explanation: "A gestação da elefanta dura cerca de 22 meses." },
+                { question: "Qual animal é imortal biologicamente?", image: "https://picsum.photos/id/1011/800/600", options: ["Tartaruga-gigante", "Água-viva Turritopsis", "Estrela-do-mar", "Salamandra"], correct: 1, explanation: "A água-viva Turritopsis dohrnii pode reverter seu ciclo de vida indefinidamente." }
             ]
-        };
+        }
 
-        let currentQuestions = [];
-        let currentIndex = 0;
-        let score = 0;
-        let timer;
+        let currentDifficulty = 'easy'
+        let currentQuestions = []
+        let currentQuestionIndex = 0
+        let score = 0
+        let timerInterval = null
+        let timeLeft = 30
 
-        function startQuiz(level) {
-            document.getElementById('homeScreen').classList.add('hidden');
-            document.getElementById('quizScreen').classList.remove('hidden');
-            document.getElementById('scoreHeader').classList.remove('hidden');
+        const correctSound = document.getElementById('correct-sound')
+        const wrongSound = document.getElementById('wrong-sound')
+        const bgMusic = document.getElementById('bg-music')
 
-            currentQuestions = questions[level === 0 ? 'easy' : level === 1 ? 'medium' : 'hard'];
-            currentQuestions = [...currentQuestions].sort(() => Math.random() - 0.5);
+        function startQuiz(difficulty) {
+            currentDifficulty = difficulty
+            currentQuestions = [...questions[difficulty]]
+            currentQuestions.sort(() => Math.random() - 0.5)
             
-            currentIndex = 0;
-            score = 0;
-            document.getElementById('currentScore').textContent = 0;
-            loadQuestion();
+            currentQuestionIndex = 0
+            score = 0
+            
+            document.getElementById('start-screen').classList.add('hidden')
+            document.getElementById('quiz-screen').classList.remove('hidden')
+            document.getElementById('results-screen').classList.add('hidden')
+            
+            bgMusic.volume = 0.3
+            bgMusic.play().catch(() => {})
+            
+            loadQuestion()
         }
 
         function loadQuestion() {
-            if (currentIndex >= currentQuestions.length) {
-                showResult();
-                return;
-            }
-
-            const q = currentQuestions[currentIndex];
-            document.getElementById('currentQuestionNum').textContent = currentIndex + 1;
-            document.getElementById('questionText').textContent = q.q;
-            document.getElementById('progress').style.width = ((currentIndex / currentQuestions.length) * 100) + '%';
-
-            const container = document.getElementById('optionsContainer');
-            container.innerHTML = '';
-
-            q.a.forEach((answer, i) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full p-6 text-left rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-xl transition-all";
-                btn.textContent = answer;
-                btn.onclick = () => answerQuestion(i);
-                container.appendChild(btn);
-            });
-
-            startTimer();
+            const q = currentQuestions[currentQuestionIndex]
+            
+            document.getElementById('question-number').textContent = currentQuestionIndex + 1
+            document.getElementById('progress').style.width = `${((currentQuestionIndex)/6) * 100}%`
+            
+            document.getElementById('question-text').textContent = q.question
+            document.getElementById('question-image').style.backgroundImage = `url('${q.image}')`
+            
+            const optionsDiv = document.getElementById('options')
+            optionsDiv.innerHTML = ''
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button')
+                btn.className = `option w-full text-left p-6 rounded-3xl bg-green-950 border border-green-700 hover:border-green-400 text-xl font-medium`
+                btn.innerHTML = `
+                    <span class="inline-block w-8 h-8 bg-green-800 text-green-300 rounded-2xl flex items-center justify-center mr-4">${String.fromCharCode(65 + index)}</span>
+                    ${option}
+                `
+                btn.onclick = () => selectAnswer(index, btn)
+                optionsDiv.appendChild(btn)
+            })
+            
+            resetTimer()
         }
 
-        function startTimer() {
-            let time = 30;
-            document.getElementById('timer').textContent = time + "s";
+        function resetTimer() {
+            if (timerInterval) clearInterval(timerInterval)
+            timeLeft = 30
+            document.getElementById('timer').textContent = `${timeLeft}s`
+            document.getElementById('timer').classList.remove('text-red-400')
             
-            if (timer) clearInterval(timer);
-            
-            timer = setInterval(() => {
-                time--;
-                document.getElementById('timer').textContent = time + "s";
-                if (time <= 0) {
-                    clearInterval(timer);
-                    nextQuestion();
+            timerInterval = setInterval(() => {
+                timeLeft--
+                document.getElementById('timer').textContent = `${timeLeft}s`
+                if (timeLeft <= 10) document.getElementById('timer').classList.add('text-red-400')
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval)
+                    timeUp()
                 }
-            }, 1000);
+            }, 1000)
         }
 
-        function answerQuestion(selected) {
-            clearInterval(timer);
-            const correct = currentQuestions[currentIndex].c;
-            const buttons = document.querySelectorAll('#optionsContainer button');
+        function timeUp() {
+            showFeedback(false, "O tempo acabou!")
+        }
+
+        function selectAnswer(selectedIndex, element) {
+            clearInterval(timerInterval)
+            const q = currentQuestions[currentQuestionIndex]
+            const isCorrect = selectedIndex === q.correct
             
-            buttons.forEach((btn, i) => {
-                if (i === correct) btn.style.backgroundColor = '#4ade80';
-                if (i === selected && i !== correct) btn.style.backgroundColor = '#f87171';
-                btn.onclick = null;
-            });
-
-            if (selected === correct) {
-                score += 10;
-                document.getElementById('currentScore').textContent = score;
+            const allOptions = document.querySelectorAll('#options button')
+            allOptions.forEach((opt, i) => {
+                opt.disabled = true
+                if (i === q.correct) opt.classList.add('correct', 'border-green-400')
+                if (i === selectedIndex && !isCorrect) opt.classList.add('bg-red-900', 'border-red-400')
+            })
+            
+            if (isCorrect) {
+                score += 100
+                correctSound.currentTime = 0
+                correctSound.play()
+                document.getElementById('current-score').textContent = score
+            } else {
+                wrongSound.currentTime = 0
+                wrongSound.play()
             }
+            
+            showFeedback(isCorrect, q.explanation)
+        }
 
-            setTimeout(() => {
-                currentIndex++;
-                loadQuestion();
-            }, 1400);
+        function showFeedback(isCorrect, explanation) {
+            const modal = document.getElementById('feedback-modal')
+            const content = document.getElementById('feedback-content')
+            
+            if (isCorrect) {
+                content.innerHTML = `
+                    <div class="text-7xl mb-6">🎉</div>
+                    <div class="text-4xl font-bold text-green-400 mb-4">EXCELENTE!</div>
+                    <p class="text-green-200 text-xl">${explanation}</p>
+                `
+            } else {
+                content.innerHTML = `
+                    <div class="text-7xl mb-6">😔</div>
+                    <div class="text-4xl font-bold text-red-400 mb-4">QUASE!</div>
+                    <p class="text-green-200 text-xl">${explanation}</p>
+                `
+            }
+            modal.classList.remove('hidden')
         }
 
         function nextQuestion() {
-            currentIndex++;
-            loadQuestion();
+            document.getElementById('feedback-modal').classList.add('hidden')
+            currentQuestionIndex++
+            if (currentQuestionIndex >= 6) {
+                showResults()
+            } else {
+                loadQuestion()
+            }
         }
 
-        function showResult() {
-            document.getElementById('quizScreen').classList.add('hidden');
-            document.getElementById('resultScreen').classList.remove('hidden');
-
-            const percent = Math.round((score / (currentQuestions.length * 10)) * 100);
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden')
+            const results = document.getElementById('results-screen')
+            results.classList.remove('hidden')
             
-            document.getElementById('finalScore').textContent = score + " pts";
-            document.getElementById('accuracy').innerHTML = `Você acertou <span class="text-emerald-400 font-bold">${percent}%</span>`;
+            document.getElementById('final-score').textContent = score
+            document.getElementById('correct-count').textContent = `${Math.round(score/100)}/6`
+            
+            const percent = (score / 600) * 100
+            let animal = "🐢"
+            let title = "Iniciante da Selva"
+            
+            if (percent >= 90) { animal = "🦅"; title = "MESTRE DA SELVA!"; }
+            else if (percent >= 70) { animal = "🐆"; title = "Predador Experiente"; }
+            else if (percent >= 50) { animal = "🦒"; title = "Explorador"; }
+            
+            document.getElementById('result-animal').textContent = animal
+            document.getElementById('result-title').textContent = title
+            
+            if (percent >= 60) launchConfetti()
+        }
 
-            const emoji = document.getElementById('resultEmoji');
-            emoji.textContent = percent > 80 ? "🏆" : percent > 60 ? "🎉" : percent > 40 ? "👍" : "🐢";
+        function launchConfetti() {
+            const colors = ['#22c55e', '#eab308', '#ef4444', '#8b5cf6']
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div')
+                    confetti.textContent = ['🦋','⭐','🌿','🍃'][Math.floor(Math.random()*4)]
+                    confetti.style.position = 'fixed'
+                    confetti.style.left = Math.random() * 100 + 'vw'
+                    confetti.style.top = '-50px'
+                    confetti.style.fontSize = '2rem'
+                    confetti.style.zIndex = '9999'
+                    confetti.style.transition = 'all 4s linear'
+                    document.body.appendChild(confetti)
+                    setTimeout(() => confetti.style.transform = `translateY(${window.innerHeight + 100}px) rotate(${Math.random()*800}deg)`, 50)
+                    setTimeout(() => confetti.remove(), 5000)
+                }, i * 12)
+            }
         }
 
         function restartQuiz() {
-            document.getElementById('resultScreen').classList.add('hidden');
-            document.getElementById('homeScreen').classList.remove('hidden');
-            document.getElementById('scoreHeader').classList.add('hidden');
+            document.getElementById('results-screen').classList.add('hidden')
+            startQuiz(currentDifficulty)
+        }
+
+        function goHome() {
+            document.getElementById('results-screen').classList.add('hidden')
+            document.getElementById('start-screen').classList.remove('hidden')
+            document.getElementById('quiz-screen').classList.add('hidden')
+            bgMusic.pause()
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('quiz-screen').classList.contains('hidden')) return
+            if (e.key === '1' || e.key.toLowerCase() === 'a') selectOptionByIndex(0)
+            if (e.key === '2' || e.key.toLowerCase() === 'b') selectOptionByIndex(1)
+            if (e.key === '3' || e.key.toLowerCase() === 'c') selectOptionByIndex(2)
+            if (e.key === '4' || e.key.toLowerCase() === 'd') selectOptionByIndex(3)
+        })
+
+        function selectOptionByIndex(i) {
+            const options = document.querySelectorAll('#options button')
+            if (options.length > i && !options[0].disabled) options[i].click()
+        }
+
+        window.onload = function() {
+            document.getElementById('score-header').classList.add('flex')
+            console.log('%c🎮 Quiz Selvagem - feito por Soares', 'color:#4ade80; font-family:monospace')
         }
     </script>
 </body>
